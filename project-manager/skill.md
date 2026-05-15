@@ -1,27 +1,31 @@
 ---
-name: project-manager
-description: "AI辅助项目管理：自动整理仿真项目、建立项目记忆、追踪实验状态"
+name: lazyguys
+description: "AI智能助手：扫描项目、识别文件、建立关系图谱、主动追踪实验状态、自动维护项目记忆"
 author: LazyGuys
 version: 1.0.0
 user-invocable: true
 ---
 
-# LazyGuys - Project Manager
+# LazyGuys
 
-> 让 AI 自动管理仿真/科研项目，最大程度省心
+> 让 AI 自动管理项目，最大程度省心
 
 ## 使用方式
 
-在项目目录中，直接用自然语言描述需求，例如：
+**主命令：** `/lazyguys`
 
-- "帮我整理下这个项目"
-- "看看项目现在什么状态"
-- "这张图是怎么来的？"
-- "哪些实验还没跑完？"
-- "实验跑完了，帮我更新下"
-- "初始化一个新项目"
+调用即执行完整整理流程：
+1. 扫描项目所有文件
+2. 识别文件类型和用途
+3. 建立文件关系图谱
+4. 检测问题（孤儿文件/过期结果）
+5. 生成标准目录结构
+6. 更新 CLAUDE_PROJECT.md 项目记忆
 
-我会根据你的意图自动选择对应的操作。
+**也可以带参数：**
+- `/lazyguys init` - 初始化新项目
+- `/lazyguys scan` - 仅扫描复盘
+- `/lazyguys "查询内容"` - 查询项目内容
 
 ---
 
@@ -51,7 +55,7 @@ user-invocable: true
 | 新建、初始化、开始新项目 | init 初始化 |
 | 跑完、完成 | scan + update + 状态刷新 |
 | 归档、结束 | archive 标记归档 |
-| 其他 | scan + 状态报告（默认） |
+| **直接调用（无参数）** | scan → organize → update（完整整理） |
 
 ---
 
