@@ -1,0 +1,110 @@
+# 文件类型识别规则
+# 用于识别文件类型、用途和关联关系
+
+file_types:
+  simulation_script:
+    extensions: [".py", ".m", ".inp", ".c", ".cpp", ".f", ".for", ".java", ".sh", ".bat"]
+    keywords: ["run", "main", "solve", "sim", "simulate", "batch", "execute", "launch"]
+    indicators:
+      - 包含仿真求解逻辑
+      - 调用仿真器或求解器
+      - 参数配置相关
+
+  data_input:
+    extensions: [".csv", ".xlsx", ".xls", ".txt", ".json", ".yaml", ".yml", ".xml", ".mat"]
+    keywords: ["input", "param", "config", "settings", "raw", "initial"]
+    indicators:
+      - 包含参数配置
+      - 作为仿真输入
+
+  data_output:
+    extensions: [".out", ".log", ".dat", ".csv", ".txt", ".h5", ".hdf5", ".res", ".rpt"]
+    keywords: ["output", "result", "log", "summary", "report"]
+    indicators:
+      - 仿真或计算的输出结果
+      - 包含数值数据或日志
+
+  figure:
+    extensions: [".png", ".jpg", ".jpeg", ".svg", ".eps", ".pdf", ".fig"]
+    keywords: ["fig", "plot", "chart", "graph", "diagram", "image"]
+    indicators:
+      - 图表或图片文件
+      - 可被 LaTeX 引用
+
+  paper:
+    extensions: [".tex", ".bib"]
+    keywords: ["paper", "draft", "thesis", "article", "report", "main", "chapter"]
+    indicators:
+      - LaTeX 论文文档
+      - 引用文献文件
+
+  documentation:
+    extensions: [".md", ".txt", ".doc", ".docx", ".pdf"]
+    keywords: ["readme", "note", "doc", "manual", "guide", "meeting", "log"]
+    indicators:
+      - 文档说明类文件
+      - 非数据、非图表
+
+relationship_rules:
+  # 如何推断文件关系
+
+  script_to_output:
+    description: "脚本生成输出文件"
+    patterns:
+      - script: "run_*.py" or "main_*.py" or "*_run.py"
+        output: "output/*.csv" or "output/*.dat" or "results/*.out"
+      - script: "*.m" (Matlab)
+        output: "*.mat" or "*.csv" in same or output/ directory
+      - script: "*.inp" (ANSYS/Abaqus)
+        output: "*.rst" or "*.rth" or "*.out"
+
+  data_to_plot:
+    description: "数据文件被绘图脚本使用"
+    patterns:
+      - data: "*.csv" or "*.dat"
+        script: "plot_*.py" or "plot.py" or "visualize_*.m"
+        output: "../figures/fig*.png" or "fig*.png"
+
+  plot_to_paper:
+    description: "图表被论文引用"
+    patterns:
+      - figure: "fig*.png" or "fig*.pdf"
+        paper: "*.tex"
+        relation: "\includegraphics{...}"
+
+  experiment_structure:
+    description: "实验目录结构"
+    expected:
+      - "{exp_name}/input/"    # 输入参数
+      - "{exp_name}/output/"   # 输出结果
+      - "{exp_name}/scripts/"  # 实验脚本
+      - "{exp_name}/README.md" # 实验说明
+
+status_markers:
+  pending:
+    indicators: ["目录存在但无输出文件", "有 input/ 但无 output/"]
+
+  running:
+    indicators: ["存在 .lock 文件", "日志显示运行中", "output/ 正在写入"]
+
+  completed:
+    indicators: ["output/ 存在文件", "输出文件比输入文件新"]
+
+  failed:
+    indicators: ["存在 error 日志", "output/ 无正常输出", "运行时间异常短"]
+
+  stale:
+    indicators: ["输出文件比输入文件旧"]
+    warning: "实验输入已更新但输出未刷新"
+
+orphan_detection:
+  conditions:
+    - "无法关联到任何实验目录"
+    - "无其他文件引用该文件"
+    - "与已知模式都不匹配"
+
+  suspicious_patterns:
+    - "*.bak"     # 备份文件
+    - "*_old*"    # 旧版本
+    - "*_copy*"   # 副本
+    - "~$*"       # 临时文件

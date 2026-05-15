@@ -1,0 +1,58 @@
+name: "默认仿真项目结构"
+description: "适用于动力学仿真/后处理/论文绘图工作流"
+
+directories:
+  - path: experiments/
+    description: "按实验编号组织的仿真实验"
+    example: "exp_001/, exp_002/"
+
+  - path: data/
+    description: "原始数据和外部输入文件"
+    example: "raw_data.csv, parameters.yaml"
+
+  - path: results/
+    description: "处理结果和中间计算文件"
+    example: "processed_data.csv, summary.txt"
+
+  - path: figures/
+    description: "生成的图表、图片、矢量图"
+    example: "fig1_force_curve.png, fig2_comparison.svg"
+
+  - path: papers/
+    description: "论文相关的 LaTeX 和文档"
+    example: "draft.tex, references.bib"
+
+  - path: scripts/
+    description: "工具脚本和自动化程序"
+    example: "batch_run.py, plot_generator.m"
+
+  - path: docs/
+    description: "项目文档、说明、会议记录"
+    example: "README.md, meeting_notes.md"
+
+  - path: archive/
+    description: "已完成或废弃的实验归档"
+    example: "old/, deprecated/"
+
+auto_generated_files:
+  - path: CLAUDE_PROJECT.md
+    description: "项目记忆文件（自动维护）"
+    hidden: true
+
+  - path: .claude/settings.json
+    description: "Claude Code 全局策略配置"
+    hidden: true
+
+experiment_template:
+  path: "experiments/{name}/"
+  subdirs:
+    - input/      # 输入文件
+    - output/     # 仿真输出
+    - scripts/    # 实验专用脚本
+    - figures/    # 实验生成的图表（可链接到根目录figures/）
+
+naming_conventions:
+  experiments: "exp_{NNN}"           # exp_001, exp_002
+  figures: "fig{N}_{description}"     # fig1_force_curve.png
+  data: "{description}_{date}"        # raw_data_20260115.csv
+  scripts: "{description}_{role}"     # plot_force_curve.py
